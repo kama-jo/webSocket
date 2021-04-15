@@ -1,7 +1,7 @@
 # webSocket
 
 ## Install 
-run cmd
+run cmd in current repertoire
 ```
 npm install
 ```
