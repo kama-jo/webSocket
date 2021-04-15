@@ -5,6 +5,7 @@ const io = require("socket.io")(3000, {
 })
 
 let users = []
+let onglet = "none"
 
 io.on('connection' , socket => {
 
@@ -26,11 +27,15 @@ io.on('connection' , socket => {
         // on vérifie si les deux onglets nécessaire sont actifs
         if (currentUser.onglet !== user.onglet) {
           users.push(currentUser)
-          console.log("Tous les onglets sont actifs")
+          onglet = "all"
+          socket.broadcast.emit('onglet', { onglet: onglet })
         }
       }else{
+        onglet = "onlyOne"
         users.push(currentUser)
       }
+
+      socket.emit('onglet', { onglet: onglet })
 
     } catch (e){
       console.error(e.message)
@@ -41,7 +46,7 @@ io.on('connection' , socket => {
     if (currentUser) {
       // On retire l'onglet actif
       users = users.filter(u => (u.id === currentUser.id && u.session === currentUser.session && u.onglet !== currentUser.onglet ))
-      console.log(`Déconnection de l'${currentUser.onglet}`)
+      socket.broadcast.emit('onglet', { onglet: "onlyOne" })
     }
   })
 
