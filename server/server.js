@@ -24,14 +24,13 @@ io.on('connection' , socket => {
       let user = users.find(u => (u.id === currentUser.id && u.session === currentUser.session))
       if (user) {
         // on vérifie si les deux onglets nécessaire sont actifs
-        if (currentUser.onglet == "onglet1" && user.onglet == "onglet2") {
+        if (currentUser.onglet !== user.onglet) {
+          users.push(currentUser)
           console.log("Tous les onglets sont actifs")
         }
       }else{
         users.push(currentUser)
-        console.log(`Seulement l'onglet ${currentUser.onglet} est actif`)
       }
-
 
     } catch (e){
       console.error(e.message)
@@ -40,8 +39,9 @@ io.on('connection' , socket => {
 
   socket.on('disconnect', () => {
     if (currentUser) {
-      users = users.filter(u => u.id !== currentUser.id)
-      console.log("Déconnecté")
+      // On retire l'onglet actif
+      users = users.filter(u => (u.id === currentUser.id && u.session === currentUser.session && u.onglet !== currentUser.onglet ))
+      console.log(`Déconnection de l'${currentUser.onglet}`)
     }
   })
 
